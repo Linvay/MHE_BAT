@@ -66,6 +66,7 @@ class wthe_bat():
         self.init_bat()
 
         for t in tqdm(range(self.N_gen), desc="moving bats"):
+            Fstar = self.img_entropy_dif(self.best)
             for i in range(self.N_pop):
                 self.Q[i] = np.random.uniform(self.Qmin, self.Qmax)
                 self.V[i] += (self.solution[i] - self.best) * self.Q[i]
@@ -74,14 +75,14 @@ class wthe_bat():
                 S[i] = self.simplebounds(S[i], self.LB[0], self.UB[0])
                 self.V[i] = self.simplebounds(self.V[i], [self.Vmin] * 2, [self.Vmax] * 2)
                 # pulse rate
-                if np.random.random() > self.r[i]:
+                if np.random.random() < self.r[i]:
                     # generate local solution around the selected best solution
                     S[i] = self.best + 0.001 * np.random.randn(1, self.dimension)
                     S[i] = self.simplebounds(S[i], self.LB[0], self.UB[0])
                 # evaluate new solutions
                 Fnew = self.img_entropy_dif(S[i])
                 # if new solution improves and not too loud, update solution
-                if Fnew <= self.fitness[i] and rand() < np.average(self.A):
+                if Fnew <= Fstar and rand() < np.average(self.A):
                     self.solution[i] = S[i]
                     self.fitness[i] = Fnew
                     # update Ai and ri
