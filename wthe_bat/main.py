@@ -2,6 +2,7 @@ from tkinter.tix import COLUMN, ROW
 import numpy as np
 import cv2
 from imWeightedThresholdedheq import imWTHeq
+from tqdm import tqdm
 import math
 import skimage.measure
 import numpy as np
@@ -64,7 +65,7 @@ class wthe_bat():
         S = np.zeros((self.N_pop, self.dimension))  # the location of the bats
         self.init_bat()
 
-        for t in range(self.N_gen):
+        for t in tqdm(range(self.N_gen), desc="moving bats"):
             for i in range(self.N_pop):
                 self.Q[i] = np.random.uniform(self.Qmin, self.Qmax)
                 self.V[i] += (self.solution[i] - self.best) * self.Q[i]
@@ -93,7 +94,6 @@ class wthe_bat():
                 if Fnew <= self.min_fitness:
                     self.best = S[i]
                     self.min_fitness = Fnew
-            print(t)
             
         print("Best =", self.best, "\nfmin =", self.min_fitness)
         heq_img, Wout = imWTHeq(self.og_img, r=self.best[0], v=self.best[1])
@@ -107,7 +107,7 @@ class wthe_bat():
 if __name__ == "__main__":
     test_img_dir = "test_img/"
     result_img_dir = "result_img/"
-    og_img_name = "einstein"
+    og_img_name = "peppers"
     og_img_fname = og_img_name + ".jpg"
     print(og_img_fname)
     og_img = cv2.imread(test_img_dir + og_img_fname, cv2.IMREAD_GRAYSCALE)
